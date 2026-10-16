@@ -1,5 +1,5 @@
 # Kaguya as a *user* background service (no root needed).
-# Install steps are in README.md -> "Run Kaguya in the background".
+# Install steps are in docs/background-service.md.
 [Unit]
 Description=Kaguya moonlit host security monitor
 After=network-online.target
@@ -7,8 +7,8 @@ Wants=network-online.target
 
 [Service]
 WorkingDirectory=%h/Kaguya
-# loads the SMTP key (CS_SMTP_PASSWORD) from the private file, then starts Kaguya
-ExecStart=/bin/bash -c '. %h/.config/kaguya/smtp.env; exec %h/.local/bin/kaguya run'
+# loads the SMTP key (if the file exists) (CS_SMTP_PASSWORD) from the private file, then starts Kaguya
+ExecStart=/bin/bash -c '[ -f %h/.config/kaguya/smtp.env ] && . %h/.config/kaguya/smtp.env; exec %h/.local/bin/kaguya run'
 Restart=always
 RestartSec=10
 
