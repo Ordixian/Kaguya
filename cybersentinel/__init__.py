@@ -6,5 +6,5 @@ processes, auth logs, file integrity), runs it through a detection engine,
 and exposes alerts over a live dashboard and JSON API.
 """
 
-__version__ = "0.1.0"
+__version__ = "2.13.0"
 __all__ = ["__version__"]

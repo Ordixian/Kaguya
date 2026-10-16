@@ -83,6 +83,7 @@ def cmd_status(args):
     cfg, storage = _load(args)
     s = storage.stats()
     print(BANNER)
+    print(f"  version         : {__version__}")
     print(f"  tier            : {cfg.tier_name}")
     print(f"  retention (days): {cfg.tier.get('retention_days')}")
     print(f"  max events      : {cfg.tier.get('max_events') or 'unlimited'}")

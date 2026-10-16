@@ -59,7 +59,7 @@ _MASCOT_FILES = {"mascot-calm.png", "mascot-alert.png",
 
 def make_handler(storage, monitor):
     class Handler(BaseHTTPRequestHandler):
-        server_version = "Kaguya/0.1"
+        server_version = "Kaguya/2.13"
 
         # keep the console quiet; the monitor is the interesting log
         def log_message(self, fmt, *args):
