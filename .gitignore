@@ -1,0 +1,22 @@
+# data & runtime
+data/
+*.db
+*.db-journal
+*.log
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# your own dashboard art (not shipped)
+cybersentinel/web/mascot*.*
+cybersentinel/web/wallpaper.*
+
+# editor / os
+.vscode/
+.idea/
+.DS_Store

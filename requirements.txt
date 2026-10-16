@@ -1,0 +1,8 @@
+# CyberSentinel runs on the Python standard library alone.
+# These are optional but recommended for the richest telemetry:
+
+psutil>=5.9        # process + socket introspection (owning PID, exe, user)
+PyYAML>=6.0        # read config/config.yaml (defaults used if absent)
+
+# Nothing else is required: the HTTP API, dashboard, storage (SQLite) and
+# detection engine are all pure standard library.

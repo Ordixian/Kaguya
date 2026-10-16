@@ -1,0 +1,91 @@
+# CyberSentinel configuration
+# Everything here has a built-in default; this file just makes the common
+# knobs visible. Delete any key to fall back to the default.
+
+tier: community            # community | pro | enterprise
+host_label: null           # null => auto (this machine's hostname)
+database: data/cybersentinel.db
+collect_interval: 5        # seconds between collector sweeps
+
+api:
+  host: 127.0.0.1          # bind address for dashboard + API
+  port: 8787
+
+collectors:
+  network:
+    enabled: true
+  process:
+    enabled: true
+  authlog:
+    enabled: true
+    paths:                 # first readable file wins; else journald fallback
+      - /var/log/auth.log
+      - /var/log/secure
+    use_journal: true
+  fim:                     # file integrity monitoring
+    enabled: true
+    paths:
+      - /etc/passwd
+      - /etc/hosts
+      - /etc/crontab
+      - ~/.bashrc
+      - ~/.profile
+      - ~/.ssh/authorized_keys
+
+notifications:
+  min_severity: high        # only notify at/above this: info|low|medium|high|critical
+  console:
+    enabled: true           # print a banner to stdout (zero config)
+  desktop:
+    enabled: false          # Linux toast via `notify-send`
+  webhook:
+    enabled: false          # generic JSON POST; set url here or env CS_WEBHOOK_URL
+    url: ""
+  slack:
+    enabled: false          # Slack/Mattermost incoming webhook
+    webhook_url: ""         #   set here or (preferred) env CS_SLACK_WEBHOOK
+
+  email:                    # used for scheduled REPORTS only (attaches the PDF)
+    enabled: false          # set true after filling in the SMTP details below
+    smtp_host: smtp.example.com
+    smtp_port: 587
+    starttls: true
+    username: ""            #   password goes in env CS_SMTP_PASSWORD, never in this file
+    from: ""
+    to: []
+
+reports:                    # scheduled alert-history reports -> Slack / webhook / email / console
+  daily:
+    enabled: true
+    hour: 20                # every day at 8pm (local time)
+    retry_hour: 8           # if it couldn't send, try once more at 8am
+  weekly:
+    enabled: true
+    hour: 20                # every Monday at 8pm
+    weekday: 0              # 0 = Monday
+    retry_hour: 8
+
+response:
+  allow_block: true         # show the dashboard "Block this IP" button (needs sudo/root to take effect)
+
+detection:
+  ssh_bruteforce:
+    enabled: true
+    threshold: 5           # failed logins from one IP ...
+    window_sec: 300        # ... within this window => HIGH alert
+  new_listen_port:
+    enabled: true
+  suspicious_exec_path:
+    enabled: true
+    paths: ["/tmp", "/dev/shm", "/run/user", "/var/tmp"]
+  connection_fanout:
+    enabled: true
+    threshold: 15          # distinct remote hosts from one process ...
+    window_sec: 60         # ... within this window => MEDIUM alert
+  known_bad_port:
+    enabled: true
+    ports: [23, 1337, 4444, 5555, 6667, 31337]
+  file_integrity:
+    enabled: true
+  privilege_event:
+    enabled: true

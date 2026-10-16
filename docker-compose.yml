@@ -1,0 +1,23 @@
+# CyberSentinel — single-node community deployment.
+#
+# For real host telemetry the container needs visibility into the host's
+# processes, network and logs. `network_mode: host` + `pid: host` give the
+# collectors the same view the tool has when run natively. Drop these for a
+# sandboxed demo that only sees the container itself.
+services:
+  cybersentinel:
+    build: .
+    container_name: cybersentinel
+    restart: unless-stopped
+    network_mode: host          # see host sockets (and expose 8787 on host)
+    pid: host                   # see host processes
+    environment:
+      - CS_API_HOST=127.0.0.1
+      - CS_API_PORT=8787
+      - CS_TIER=community
+    volumes:
+      - ./data:/app/data        # persist the SQLite database
+      - ./config:/app/config:ro
+      - /var/log:/var/log:ro    # read auth logs if present
+    # If your host has no /var/log/auth.log (systemd-only), the authlog
+    # collector falls back to journald when the journal is readable.

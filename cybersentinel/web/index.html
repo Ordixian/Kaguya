@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kaguya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+</head>
+<body>
+  <div class="wallpaper" id="wallpaper" aria-hidden="true"><video id="wall-video" muted loop playsinline preload="auto" tabindex="-1"></video></div>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 7.7 8 9 4.6-1.3 8-4.5 8-9V6l-8-3z"/><path d="M14.5 9.5a3.5 3.5 0 1 0 0 5 3 3 0 0 1 0-5z"/></svg></span>
+      <div class="brand-text">
+        <h1>Kaguya</h1>
+        <span class="tag">Host Security Monitor</span>
+      </div>
+    </div>
+    <div class="status">
+      <span class="status-chip">
+        <span class="dot" id="live-dot"></span>
+        <span id="status-text">connecting…</span>
+      </span>
+      <span class="pill" id="tier-pill">—</span>
+      <label class="switch" id="wall-switch" title="Wallpaper on/off (W)">
+        <input type="checkbox" id="wall-toggle" role="switch" aria-label="Wallpaper">
+        <span class="slider"></span><span class="switch-label">Wallpaper</span>
+      </label>
+      <button class="icon-btn" id="mute-btn" title="Mute alert sound (M)" aria-label="Mute alerts">♪</button>
+      <button class="icon-btn" id="theme-btn" title="Toggle light / dark (T)" aria-label="Toggle theme">☾</button>
+    </div>
+  </header>
+
+  <section class="greeting" id="greeting">
+    <div class="greet-text">
+      <span class="greet-line" id="greet-line">Welcome back</span>
+      <span class="greet-sub" id="greet-sub"></span>
+    </div>
+    <button class="refresh-btn" id="refresh-btn" title="Refresh now">
+      <span class="rico">↻</span><span>Refresh</span>
+    </button>
+  </section>
+
+  <section class="tiles" id="tiles"></section>
+  <div class="sevstrip" id="sevstrip"></div>
+
+  <main class="grid">
+    <section class="panel">
+      <div class="panel-head">
+        <h2><span class="h2-icon alerts">◆</span> Alert Stream</h2>
+        <div class="head-tools">
+        <div class="dl-wrap">
+          <button class="dl-btn alt" id="safe-btn" aria-haspopup="true" aria-expanded="false">Safe list</button>
+          <div class="dl-pop safe-pop" id="safe-pop" hidden><div id="safe-body"></div></div>
+        </div>
+        <div class="dl-wrap">
+          <button class="dl-btn" id="dl-btn" aria-haspopup="true" aria-expanded="false">Download history</button>
+          <div class="dl-pop" id="dl-pop" hidden>
+            <label>Time range
+              <select id="dl-period">
+                <option value="hour">Last hour</option>
+                <option value="6h">Last 6 hours</option>
+                <option value="day" selected>Last 24 hours (daily)</option>
+                <option value="week">Last 7 days (weekly)</option>
+                <option value="month">Last 30 days (monthly)</option>
+                <option value="quarter">Last 90 days</option>
+                <option value="year">Last year</option>
+                <option value="all">Everything recorded</option>
+                <option value="custom">Custom dates…</option>
+              </select>
+            </label>
+            <div class="dl-custom" id="dl-custom" hidden>
+              <label>From <input type="datetime-local" id="dl-from"></label>
+              <label>To <input type="datetime-local" id="dl-to"></label>
+            </div>
+            <label>File type
+              <select id="dl-format">
+                <option value="pdf" selected>PDF document</option>
+                <option value="docx">Word document (.docx)</option>
+                <option value="csv">Spreadsheet (.csv)</option>
+              </select>
+            </label>
+            <button class="dl-go" id="dl-go">Download report</button>
+            <div class="dl-note">Each alert is explained in plain English with its likely cause and how to fix it.</div>
+          </div>
+        </div>
+        <div class="filters" id="alert-filters">
+          <button data-status="" class="active">All</button>
+          <button data-status="open">Open</button>
+          <button data-status="acknowledged">Ack</button>
+          <button data-status="resolved">Resolved</button>
+        </div>
+        </div>
+      </div>
+      <div class="list" id="alerts"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2><span class="h2-icon events">≋</span> Telemetry Stream</h2>
+        <div class="filters">
+          <input id="event-search" type="text" placeholder="filter telemetry…" />
+        </div>
+      </div>
+      <div class="list" id="events"></div>
+    </section>
+  </main>
+
+  <!-- Mood mascot: Mascot. Drop images at web/mascot-calm.png and
+       web/mascot-alert.png and they load automatically; otherwise a
+       styled placeholder shows. -->
+  <aside class="mascot" id="mascot" data-mood="calm" title="Click me to see me move · double-click to put me back">
+    <div class="mascot-halo"></div>
+    <img class="mascot-img" id="mascot-img" alt="Mascot" />
+    <div class="mascot-placeholder" id="mascot-placeholder">
+      <span class="mp-flower">🌺</span>
+      <span class="mp-name">Mascot</span>
+      <span class="mp-hint">drop mascot-calm.png /<br>mascot-alert.png here</span>
+    </div>
+    <div class="mascot-bubble" id="mascot-bubble">All quiet.</div>
+    <div class="mascot-hint" id="mascot-hint">double-click to put me back</div>
+  </aside>
+
+  <div class="mascot-backdrop" id="mascot-backdrop"></div>
+
+  <!-- toast stack for new HIGH+ alerts -->
+  <div class="toast-stack" id="toast-stack"></div>
+
+  <footer class="footer">
+    <span>Kaguya · <span id="tier-foot">community</span> tier</span>
+    <span id="host-label"></span>
+    <span id="last-sweep"></span>
+    <span class="credit">Open source · made by Ordixian /
+      <a href="https://wa.me/2349055012367" target="_blank" rel="noopener noreferrer"
+         title="Tap to contact Frost on WhatsApp">Frost</a>
+      · <a href="https://github.com/Ordixian" target="_blank" rel="noopener noreferrer"
+           title="Ordixian on GitHub">GitHub</a></span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
